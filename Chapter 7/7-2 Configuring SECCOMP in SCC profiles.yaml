@@ -1,0 +1,2 @@
+seccompProfiles:
+- localhost/<profile-name>

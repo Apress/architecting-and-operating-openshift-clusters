@@ -1,0 +1,114 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: podcool-example
+  template: podcool-example
+metadata:
+  annotations:
+    description: An simple Demo Flask Python application
+    iconClass: fa fa-leaf 
+    openshift.io/display-name: Podcool Demo App
+    tags: quickstart,podcool
+  name: podcool-example
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: podcool-example
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: podcool-example
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: podcool-example
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+    name: podcool-example
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: podcool-example:latest
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: python:3.6
+          namespace: openshift
+      type: Source
+    triggers:
+    - type: ConfigChange
+    - github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+      type: GitHub
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: podcool-example
+  spec:
+    replicas: 1
+    selector:
+      name: podcool-example
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: podcool-example
+        name: podcool-example
+      spec:
+        containers:
+        - image: podcool-example
+          name: podcool-example
+          ports:
+          - containerPort: 8080
+          env:
+          - name: APP_VERSION
+            value: v1
+          - name: APP_MESSAGE
+            value: Deployment from Template
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - podcool-example
+        from:
+          kind: ImageStreamTag
+          name: podcool-example:latest
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The URL of the repository with your application source code
+  name: SOURCE_REPOSITORY_URL
+  value: https://github.com/williamcaban/podcool.git
+- description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch
+  name: SOURCE_REPOSITORY_REF
+- description: Set this to the relative path to your project if it is not in the root
+    of your repository
+  name: CONTEXT_DIR
+- description: Github trigger secret.  A difficult to guess string encoded as part
+    of the webhook URL.  Not encrypted.
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: GITHUB_WEBHOOK_SECRET

@@ -1,0 +1,19 @@
+# Only allow HTTP and HTTPS traffic based on Pod labels
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-http-and-https-from-and-to-blue
+spec:
+  podSelector:
+    matchLabels:
+      color: blue
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          color: blue
+  - ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443

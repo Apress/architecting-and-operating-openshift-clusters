@@ -1,0 +1,1 @@
+$ oc create user <username> --full-name=“User Name”

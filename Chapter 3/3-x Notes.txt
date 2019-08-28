@@ -1,0 +1,180 @@
+#####
+
+$ oc get pods -o wide --show-labels
+NAME                ...  IP           NODE               ... LABELS
+podcool-1-gl86q     ...  10.128.2.9   ocp-n3.shift.zone  ... app=podcool,deployment=podcool-1,deploymentconfig=podcool
+postgresql-1-5s54b  ...  10.129.0.8   ocp-n2.shift.zone  ... deployment=postgresql-1,deploymentconfig=postgresql,name=postgresql
+
+
+$ oc exec podcool-1-gl86q -- python -c "from tcpping import tcpping ; tcpping(d_host='postgresql',d_port=5432, maxCount=3, DEBUG=True)"
+Connected to postgresql[5432]: tcp_seq=0 time=2.92 ms
+Connected to postgresql[5432]: tcp_seq=1 time=1.41 ms
+Connected to postgresql[5432]: tcp_seq=2 time=1.22 ms
+
+TCP Ping Results: Connections (Total/Pass/Fail/Avg): [3/3/0/1.85] (Failed: 0%)
+$ oc create -f deny-all.yaml -n demo-policy
+networkpolicy.networking.k8s.io/deny-all created
+
+$ oc get networkpolicy
+NAME       POD-SELECTOR   AGE
+deny-all   <none>         1m
+
+$ oc describe networkpolicy deny-all
+Name:         deny-all
+Namespace:    demo-policy
+Created on:   2019-01-17 18:40:52 -0500 EST
+Labels:       <none>
+Annotations:  <none>
+Spec:
+  PodSelector:     <none> (Allowing the specific traffic to all pods in this namespace)
+  Allowing ingress traffic:
+    <none> (Selected pods are isolated for ingress connectivity)
+  Allowing egress traffic:
+    <none> (Selected pods are isolated for egress connectivity)
+  Policy Types: Ingress
+$
+
+$ oc exec podcool-1-gl86q -- python -c "from tcpping import tcpping ; tcpping(d_host='postgresql',d_port=5432, maxCount=3, DEBUG=True)"
+Connection timed out!
+Connection timed out!
+Connection timed out!
+
+TCP Ping Results: Connections (Total/Pass/Fail/Avg): [3/0/3/1001.993] (Failed: 100.00%)
+
+#####
+
+$ oc create -f allow-same-and-default-ns.yml -n demo-policy
+networkpolicy.extensions/allow-same-and-default-namespace created
+
+
+$ oc describe networkpolicy allow-same-and-default-namespace
+Name:         allow-same-and-default-namespace
+Namespace:    demo-policy
+Created on:   2019-01-17 18:47:50 -0500 EST
+Labels:       <none>
+Annotations:  <none>
+Spec:
+  PodSelector:     <none> (Allowing the specific traffic to all pods in this namespace)
+  Allowing ingress traffic:
+    To Port: <any> (traffic allowed to all ports)
+    From:
+      PodSelector: <none>
+    ----------
+    To Port: <any> (traffic allowed to all ports)
+    From:
+      NamespaceSelector: name=default
+  Allowing egress traffic:
+    <none> (Selected pods are isolated for egress connectivity)
+  Policy Types: Ingress
+
+
+$ oc exec podcool-1-gl86q -- python -c "from tcpping import tcpping ; tcpping(d_host='postgresql',d_port=5432, maxCount=3, DEBUG=True)"
+Connected to postgresql[5432]: tcp_seq=0 time=3.34 ms
+Connected to postgresql[5432]: tcp_seq=1 time=4.88 ms
+Connected to postgresql[5432]: tcp_seq=2 time=1.09 ms
+
+TCP Ping Results: Connections (Total/Pass/Fail/Avg): [3/3/0/3.103] (Failed: 0%)
+$
+
+#####
+
+$ oc describe networkpolicy
+Name:         allow-same-and-default-namespace
+Namespace:    demo-policy
+Created on:   2019-01-17 18:47:50 -0500 EST
+Labels:       <none>
+Annotations:  <none>
+Spec:
+  PodSelector:     <none> (Allowing the specific traffic to all pods in this namespace)
+  Allowing ingress traffic:
+    To Port: <any> (traffic allowed to all ports)
+    From:
+      PodSelector: <none>
+    ----------
+    To Port: <any> (traffic allowed to all ports)
+    From:
+      NamespaceSelector: name=default
+  Allowing egress traffic:
+    <none> (Selected pods are isolated for egress connectivity)
+  Policy Types: Ingress
+
+
+Name:         deny-all
+Namespace:    demo-policy
+Created on:   2019-01-17 18:40:52 -0500 EST
+Labels:       <none>
+Annotations:  <none>
+Spec:
+  PodSelector:     <none> (Allowing the specific traffic to all pods in this namespace)
+  Allowing ingress traffic:
+    <none> (Selected pods are isolated for ingress connectivity)
+  Allowing egress traffic:
+    <none> (Selected pods are isolated for egress connectivity)
+  Policy Types: Ingress
+$
+
+####
+# Other NetworkPolicy references
+
+# Allow traffic between Pods in the same Project and with the default project (i.e. to access the routers)
+kind: NetworkPolicy
+apiVersion: extensions/v1beta1
+metadata:
+  name: allow-same-and-default-namespace
+spec:
+  ingress:
+  - from:
+    - podSelector: {}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: default
+
+# Allow from default 
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-from-default-namespace
+spec:
+  podSelector:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: default
+
+# Deny All Traffic (isolate all Pods in )
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: deny-by-default
+spec:
+  podSelector:
+  ingress: []
+
+# Only connections from Pods within the same project
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-same-namespace
+spec:
+  podSelector:
+  ingress:
+  - from:
+    - podSelector: {}
+
+# Only allow HTTP and HTTPS traffic based on pod labels
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-http-and-https
+spec:
+  podSelector:
+    matchLabels:
+      role: frontend
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443

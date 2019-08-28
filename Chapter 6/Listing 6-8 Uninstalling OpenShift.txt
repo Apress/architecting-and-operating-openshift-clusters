@@ -1,0 +1,10 @@
+# The following steps assume the openshift-inventory file configuration is saved as ./inventory_file in the local directory
+
+# Step 1: Uninstall the OpenShift deployment and delete data on OCS disks.
+ansible-playbook -i inventory_file -e "openshift_storage_glusterfs_wipe=true" /usr/share/ansible/openshift-ansible/playbooks/adhoc/uninstall.yml
+
+# Step 2: Remove any leftovers configuration files
+ansible nodes -i inventory_file -m file -a "dest=/etc/origin state=absent”
+
+#(optional): If the installation was using 3rd party CNI plugins remove any leftovers from the CNI configuration
+ansible nodes -i inventory_file -m file -a "dest=/etc/cni state=absent"

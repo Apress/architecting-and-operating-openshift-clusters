@@ -1,0 +1,10 @@
+# The following steps assume the openshift-inventory file configuration is saved as ./inventory_file in the local directory
+
+# Step 1: Validate Bastion Node can reach all the Nodes
+$ ansible all -i inventory_file -m ping
+
+# Step 2: Once Step 1 completes without errors, install pre-requisites
+$ ansible-playbook -i inventory_file /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml
+
+# Step: 3: Once Step 2 completes without errors, deploy the OpenShift cluster
+$ansible-playbook -i inventory_file /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml

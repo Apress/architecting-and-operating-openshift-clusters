@@ -1,0 +1,25 @@
+Step 1: Create the CI/CD Project in the OpenShift cluster
+
+oc new-project cicd --description="CI/CD Pipeline Demo"
+oc new-project cicd-dev --description="CI/CD - Dev"
+oc new-project cicd-prod --description="CI/CD - Prod"
+oc new-project cicd-staging --description="CI/CD - Staging"
+
+Step 2: Give `jenkins` Service Account `edit` access to the other Projects
+
+oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n cicd-dev
+oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n cicd-prod
+oc policy add-role-to-user edit system:serviceaccount:cicd:jenkins -n cicd-staging 
+
+Step 3: Deploy the OpenShift Pipeline from a Git repository containing the Jenkinsfile
+
+oc new-app https://github.com/williamcaban/podcicd.git -n cicd
+
+Step 4: After about 10 minutes the Jenkins Master should be ready on the `cicd` Project. Start a new pipeline build (either from GUI or CLI)
+From GUI:
+
+    `Application Console` > Project `cicd` > Builds > Pipelines --> click the `Start Pipeline` button
+
+From CLI:
+
+    `oc start-build podcicd -n cicd`

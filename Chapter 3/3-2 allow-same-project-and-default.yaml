@@ -1,0 +1,15 @@
+# Allow traffic between Pods in the same Project and with the default project (i.e. to access the routers)
+# oc label namespace default name=default
+# oc create -f 3.2_allow-same-project-and-default.yaml -n <your-namespace>
+kind: NetworkPolicy
+apiVersion: extensions/v1beta1
+metadata:
+  name: allow-same-and-default-namespace
+spec:
+  ingress:
+  - from:
+    - podSelector: {}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: default

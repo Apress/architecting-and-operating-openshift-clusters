@@ -1,0 +1,5 @@
+# Option 1: Grant ‘edit’ access to ‘jenkins’ Service Account on specific Projects
+oc policy add-role-to-user edit system:serviceaccount:<cicd-project>:jenkins -n <target-project>
+
+# Option 2: Grant ‘edit’ access to ‘jenkins’ Service Account on all Projects
+oc adm policy add-cluster-role-to-user edit system:serviceaccount:<cicd-project>:jenkins

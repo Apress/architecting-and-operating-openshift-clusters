@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgsql-lb
+spec:
+  ports:
+  - name: pgsql
+    port: 5432
+  type: LoadBalancer
+  selector:
+    name: pgsql

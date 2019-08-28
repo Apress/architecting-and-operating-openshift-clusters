@@ -1,0 +1,24 @@
+# Register each Node with RHSM
+$ subscription-manager register --username=<user_name> --password=<password>
+
+# Pull subscriptions
+$ subscription-manager refresh
+
+# Identify the available OpenShift subscriptions
+$ subscription-manager list --available --matches '*OpenShift*'
+
+# Assign a subscription to the node
+$ subscription-manager attach --pool=<pool_id>
+
+# Disable all RHSM repositories
+$ subscription-manager repos --disable="*"
+
+# Enable only repositories required by OpenShift
+$ subscription-manager repos \
+    --enable="rhel-7-server-rpms" \
+    --enable="rhel-7-server-extras-rpms" \
+    --enable="rhel-7-server-ose-3.11-rpms" \
+    --enable="rhel-7-server-ansible-2.6-rpms"
+
+# Upgrade each Node to the latest version of the OS
+$ yum -y update

@@ -1,0 +1,8 @@
+# Edit /etc/origin/node/node-config.yaml
+kubeletArguments:
+  ...
+  allowed-unsafe-sysctls:
+    - “kernel.msg*,net.ipv4.route.min_pmtu”
+
+# Restart the Node services
+$ sudo systemctl restart atomic-openshift-node

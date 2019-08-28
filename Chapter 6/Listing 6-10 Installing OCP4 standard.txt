@@ -1,0 +1,21 @@
+Listing 6-10. Installing OpenShift 4 (standard)
+# Assuming prerequisites in place.
+$ openshift-install create cluster
+? SSH Public Key /Users/wcabanba/.ssh/id_rsa.pub
+? Platform aws
+? Region us-west-2
+? Base Domain example.com
+? Cluster Name ocp4demo1
+? Pull Secret [? for help] ****<snip>*******
+INFO Creating infrastructure resources...
+INFO Waiting up to 30m0s for the Kubernetes API at https://api.ocp.example.com:6443...
+INFO API v1.12.4+0ba401e up
+INFO Waiting up to 30m0s for the bootstrap-complete event...
+INFO Destroying the bootstrap resources...
+INFO Waiting up to 30m0s for the cluster at https://api.ocp.example.com:6443 to initialize...
+INFO Waiting up to 10m0s for the openshift-console route to be created...
+INFO Install complete!
+INFO Run 'export KUBECONFIG=/path/to/ocp4demo1/auth/kubeconfig' to manage the cluster with 'oc', the OpenShift CLI.
+INFO The cluster is ready when 'oc login -u kubeadmin -p <snip>' succeeds (wait a few minutes).
+INFO Access the OpenShift web-console here: https://console-openshift-console.apps.ocp.example.com
+INFO Login to the console with user: kubeadmin, password: <snip>

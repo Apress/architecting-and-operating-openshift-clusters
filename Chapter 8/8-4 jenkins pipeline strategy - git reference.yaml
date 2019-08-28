@@ -1,0 +1,15 @@
+kind: "BuildConfig"
+apiVersion: "v1"
+metadata:
+  name: "sample-pipeline-2"
+spec:
+  source:
+    git:
+      uri: "https://git.example.com/demo/myapp"
+  strategy:
+    jenkinsPipelineStrategy:
+      env:
+      - name: "MY_STRATEGY_VAR"
+        value: "Demo Env Var from Pipeline Strategy"
+      jenkinsfilePath: path/to/jenkinsfile/filename
+

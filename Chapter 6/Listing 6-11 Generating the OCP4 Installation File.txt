@@ -1,0 +1,8 @@
+# Assuming prerequisites in place.
+$ openshift-install create install-config --dir ocp4demo1
+? SSH Public Key /Users/wcabanba/.ssh/id_rsa.pub
+? Platform aws
+? Region us-west-2
+? Base Domain example.com 
+? Cluster Name ocp
+? Pull Secret [? for help] ****<snip>*******

@@ -1,0 +1,5 @@
+# Assuming prerequisites are in place
+$ openshift-install create cluster --dir ocp4demo1 
+INFO Consuming "Install Config" from target directory
+INFO Creating infrastructure resources.
+<snip>

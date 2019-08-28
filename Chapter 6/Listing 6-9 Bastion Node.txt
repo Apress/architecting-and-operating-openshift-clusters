@@ -1,0 +1,2 @@
+# The following step assume the openshift-inventory file configuration is saved as ./inventory_file in the local directory
+$ ansible -i inventory_file masters[0] -b -m fetch -a "src=/root/.kube/config dest=/root/.kube/config flat=yes"

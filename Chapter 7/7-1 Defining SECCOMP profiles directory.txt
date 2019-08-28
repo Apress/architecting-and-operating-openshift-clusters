@@ -1,0 +1,7 @@
+# Edit /etc/origin/node/node-config.yaml
+kubeletArguments:
+  ...
+  seccomp-profile-root:
+    - “/path/to/seccomp/profiles”
+# Restart the Node services
+$ sudo systemctl restart atomic-openshift-node

@@ -1,0 +1,47 @@
+$ oc adm policy
+Manage policy on the cluster
+
+These commands allow you to assign and manage the roles and policies that apply to users. The reconcile commands allow
+you to reset and upgrade your system policies to the latest default policies.
+
+To see more information on roles and policies, use the 'get' and 'describe' commands on the following resources:
+'clusterroles', 'clusterpolicy', 'clusterrolebindings', 'roles', 'policy', 'rolebindings', and 'scc'.
+
+Usage:
+  oc adm policy [flags]
+
+Discover:
+  who-can                         List who can perform the specified action on a resource
+  scc-subject-review              Check whether a user or a ServiceAccount can create a Pod.
+  scc-review                      Checks which ServiceAccount can create a Pod
+
+Manage project membership:
+  remove-user                     Remove user from the current project
+  remove-group                    Remove group from the current project
+
+Assign roles to users and groups:
+  add-role-to-user                Add a role to users or serviceaccounts for the current project
+  add-role-to-group               Add a role to groups for the current project
+  remove-role-from-user           Remove a role from users for the current project
+  remove-role-from-group          Remove a role from groups for the current project
+
+Assign cluster roles to users and groups:
+  add-cluster-role-to-user        Add a role to users for all projects in the cluster
+  add-cluster-role-to-group       Add a role to groups for all projects in the cluster
+  remove-cluster-role-from-user   Remove a role from users for all projects in the cluster
+  remove-cluster-role-from-group  Remove a role from groups for all projects in the cluster
+
+Manage policy on pods and containers:
+  add-scc-to-user                 Add security context constraint to users or a service account
+  add-scc-to-group                Add security context constraint to groups
+  remove-scc-from-user            Remove user from scc
+  remove-scc-from-group           Remove group from scc
+
+Upgrade and repair system policy:
+  reconcile-cluster-roles         Update cluster roles to match the recommended bootstrap policy
+  reconcile-cluster-role-bindings Update cluster role bindings to match the recommended bootstrap policy
+  reconcile-sccs                  Replace cluster SCCs to match the recommended bootstrap policy
+
+Use "oc adm policy <command> --help" for more information about a given command.
+Use "oc adm options" for a list of global command-line options (applies to all commands).
+

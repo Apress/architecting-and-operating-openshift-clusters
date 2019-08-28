@@ -1,0 +1,6 @@
+# Update /etc/origin/master/master-config.yaml to include 
+jenkinsPipelineConfig:
+  autoProvisionEnabled: true 
+  templateNamespace: openshift 
+  templateName: jenkins-persistent 
+  serviceName: jenkins-persistent-svc 
